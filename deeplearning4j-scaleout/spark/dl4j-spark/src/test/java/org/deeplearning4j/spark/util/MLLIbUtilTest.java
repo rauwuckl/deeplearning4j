@@ -20,15 +20,21 @@ package org.deeplearning4j.spark.util;
 
 
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.linalg.Matrices;
+import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.deeplearning4j.datasets.iterator.impl.IrisDataSetIterator;
 import org.deeplearning4j.spark.BaseSparkTest;
 import org.junit.Test;
+import static junit.framework.TestCase.assertTrue;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.factory.Nd4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by agibsonccc on 1/23/15.
@@ -43,6 +49,43 @@ public class MLLIbUtilTest extends BaseSparkTest {
         JavaRDD<DataSet> data = sc.parallelize(list);
         JavaRDD<LabeledPoint> mllLibData = MLLibUtil.fromDataSet(sc,data);
     }
+
+    @Test
+    public void testINDtoMLMatrix(){
+        INDArray matIND = Nd4j.rand(23, 100);
+
+        Matrix matMl = MLLibUtil.toMatrix(matIND);
+
+        assertTrue(matrixEquals(matMl, matIND, 0.01));
+    }
+
+    @Test
+    public void testMltoINDMatrix() {
+        Matrix testMat = Matrices.randn(23, 100, new Random(3949955));
+
+        INDArray testMatIND = MLLibUtil.toMatrix(testMat);
+
+        assertTrue(matrixEquals(testMat, testMatIND, 0.01));
+    }
+
+    private boolean matrixEquals(Matrix mlMatrix, INDArray indMatrix, Double eps){
+        final int mlRows = mlMatrix.numRows();
+        final int mlCols = mlMatrix.numCols();
+        final int indRows = indMatrix.shape()[0];
+        final int indCols = indMatrix.shape()[1];
+
+        if(mlRows != indRows) return false;
+        if(mlCols != indCols) return false;
+
+        for(int i=0; i < mlRows; i++){
+            for(int j=0; j < mlCols; j++){
+                double delta = Math.abs(mlMatrix.apply(i, j) - indMatrix.getDouble(i, j));
+                if(delta > eps) return false;
+            }
+        }
+        return true;
+    }
+
 
 
 

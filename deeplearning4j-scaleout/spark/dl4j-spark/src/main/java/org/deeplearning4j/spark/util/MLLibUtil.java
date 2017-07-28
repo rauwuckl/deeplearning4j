@@ -85,7 +85,7 @@ public class MLLibUtil {
      * @return an mllib vector
      */
     public static INDArray toMatrix(Matrix arr) {
-        return Nd4j.create(arr.toArray(), new int[]{arr.numRows(), arr.numCols()});
+        return Nd4j.create(arr.toArray(), new int[]{arr.numRows(), arr.numCols()}, 'f');
     }
 
     /**
@@ -108,7 +108,7 @@ public class MLLibUtil {
         if(!arr.isMatrix()) {
             throw new IllegalArgumentException("passed in array must be a matrix");
         }
-        return Matrices.dense(arr.rows(), arr.columns(), arr.data().asDouble());
+        return Matrices.dense(arr.columns(), arr.rows(), arr.data().asDouble()).transpose();
     }
 
     /**
