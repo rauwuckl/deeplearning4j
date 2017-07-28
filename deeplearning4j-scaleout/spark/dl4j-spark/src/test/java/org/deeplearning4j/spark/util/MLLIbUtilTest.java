@@ -61,18 +61,18 @@ public class MLLIbUtilTest extends BaseSparkTest {
 
     @Test
     public void testMltoINDMatrix() {
-        Matrix testMat = Matrices.randn(23, 100, new Random(3949955));
+        Matrix matMl = Matrices.randn(23, 100, new Random(3949955));
 
-        INDArray testMatIND = MLLibUtil.toMatrix(testMat);
+        INDArray matIND = MLLibUtil.toMatrix(matMl);
 
-        assertTrue(matrixEquals(testMat, testMatIND, 0.01));
+        assertTrue(matrixEquals(matMl, matIND, 0.01));
     }
 
     private boolean matrixEquals(Matrix mlMatrix, INDArray indMatrix, Double eps){
         final int mlRows = mlMatrix.numRows();
         final int mlCols = mlMatrix.numCols();
-        final int indRows = indMatrix.shape()[0];
-        final int indCols = indMatrix.shape()[1];
+        final int indRows = indMatrix.rows();
+        final int indCols = indMatrix.columns();
 
         if(mlRows != indRows) return false;
         if(mlCols != indCols) return false;
