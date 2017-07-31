@@ -109,7 +109,8 @@ public class MLLibUtil {
         if (!arr.isMatrix()) {
             throw new IllegalArgumentException("passed in array must be a matrix");
         }
-        return Matrices.dense(arr.columns(), arr.rows(), arr.data().asDouble()).transpose();
+        INDArray arrInF = (arr.ordering() != 'f'  || arr.isView()) ? arr.dup('f') : arr;
+        return Matrices.dense(arr.rows(), arr.columns(), arrInF.data().asDouble());
     }
 
     /**

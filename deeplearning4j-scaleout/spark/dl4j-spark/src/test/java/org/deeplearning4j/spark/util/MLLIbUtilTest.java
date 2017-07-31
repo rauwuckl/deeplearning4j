@@ -25,10 +25,12 @@ import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.deeplearning4j.datasets.iterator.impl.IrisDataSetIterator;
 import org.deeplearning4j.spark.BaseSparkTest;
+import org.junit.Assert;
 import org.junit.Test;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.indexing.NDArrayIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +60,16 @@ public class MLLIbUtilTest extends BaseSparkTest {
         Matrix matMl = MLLibUtil.toMatrix(matIND);
 
         assertTrue(matrixEquals(matMl, matIND, 0.01));
+    }
+
+    @Test
+    public void slicedINDtoMatrix() {
+        INDArray matIND = Nd4j.rand(30, 100);
+        INDArray slicedIND = matIND.get(NDArrayIndex.all(), NDArrayIndex.interval(23, 74));
+
+        Matrix slicedMl = MLLibUtil.toMatrix(slicedIND);
+
+        assertTrue(matrixEquals(slicedMl, slicedIND, 0.01));
     }
 
     @Test
